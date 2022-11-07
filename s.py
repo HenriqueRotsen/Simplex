@@ -21,7 +21,7 @@ print(pl)
 
 # %%
 def criaTableau(c, A, b, x, y):
-    tableau = np.zeros((x+1, y+1))
+    tableau = np.zeros((x+1, y))
     v = np.identity(x)
     
     k = np.zeros((x))
@@ -34,16 +34,21 @@ def criaTableau(c, A, b, x, y):
         for j in range(y):
             tableau[i+1][j] = A[i][j]
 
-    for i in range(x):
-        tableau[i+1][y] = b[i]   
+    b = [0] + b
+    bt = np.reshape(b,(x+1, 1))
+    tableaufpi = np.concatenate((tableau, v), axis=1)
+    tableaufpi = np.concatenate((tableaufpi, bt), axis=1)
     
-    return tableau, v
+    #for i in range(x):
+    #    tableaufpi[i+1][y+x] = b[i]   
+    
+    return tableaufpi, v
 
 # %%
 def isOtima(tableau):
     z = tableau[0]
     for i in z[:-1]:
-        if i > 0:
+        if i < 0:
             return False
     return True
 
@@ -52,7 +57,7 @@ def isOtima(tableau):
 def pivotPosition(tableau):
     z = tableau[0]
     for i in range(len(z)-1):
-        if z[i] > 0:
+        if z[i] < 0:
             column = i
             break
     else:
@@ -133,10 +138,8 @@ def simplex(c, A, b):
     return get_solution(tableau)
 
 # %%
-c = [-3, -4, 5, -5]
-A = [[1, 1, 0, 0], [-1, 0, -5, 5], [2, 1, 1, -1], [-2, -1, -1, 1]]
-b = [5, -10, 10, -10]
+c = [2,4,8]
+A = [[1,0,0], [0,1,0], [0,0,1]]
+b = [1,1,1]
 s = simplex(c, A, b)
 print(s)
-
-
