@@ -1,23 +1,33 @@
 # %%
 import numpy as np
 import math
+from datetime import datetime
 
 # %%
-"""
-n = int(input())
-assert (n >= 1 and n <= 100)
-m = int(input())
-assert (m >= 1 and m <= 100)
+def lerProblema():
+  aux = input()
+  sAux = aux.split(" ", len(aux))
+  n = int(sAux[0])
+  m = int(sAux[1])
 
-pl = np.zeros((n, m))
-for i in range(n):
-  for j in range(m):
-    x = int(input())
-    assert x <= 100
-    pl[i][j] = x
-print(pl)
-"""
+  aux = input()
+  sAux = aux.split(" ", len(aux))
 
+  c = []
+  for i in range(len(sAux)):
+    c.append(int(sAux[i]))
+
+  A = np.zeros((n, m))
+  b = []
+  for i in range(n):
+    aux = input()
+    sAux = aux.split(" ", len(aux))
+    b.append(int(sAux[-1]))
+    for j in range(m):
+      x = int(sAux[j])
+      assert x <= 100
+      A[i][j] = x
+  return c, A, b
 
 # %%
 def criaTableau(c, A, b, x, y):
@@ -55,6 +65,7 @@ def isOtima(tableau):
 # %%
 # Usando Regra de Bland
 def pivotPosition(tableau):
+    ilimitada = False
     z = tableau[0]
     for i in range(len(z)-1):
         if z[i] < 0:
@@ -69,10 +80,10 @@ def pivotPosition(tableau):
         restricoes.append(math.inf if el <= 0 else eq[-1] / el)
 
     if all(x == math.inf for x in restricoes):
-        print("===============================\n\n          ILIMITADA\n\n===============================")
+        ilimitada = True
 
     row = restricoes.index(min(restricoes))
-    return row+1, column
+    return row+1, column, ilimitada
     
 
 # %%
@@ -100,6 +111,7 @@ def eliminacaoGaussiana(tableau, pivot_position, vero):
     
     return novoTableau, novoVero
 
+
 # %%
 def is_basic(column):
     return sum(column) == 1 and len([c for c in column if c == 0]) == len(column) - 1
@@ -122,24 +134,37 @@ def simplex(c, A, b):
     y = len(A[0])
     
     tableau, vero = criaTableau(c, A, b, x, y)
-    print(isOtima(tableau))
+    #print(isOtima(tableau))
     
-    print(tableau)
+    #print(tableau)
     print(vero)
 
     while not(isOtima(tableau)):
-        pivot_position = pivotPosition(tableau)
+        pivotRow, pivotCol, ilimitada  = pivotPosition(tableau)
+        pivot_position = pivotRow, pivotCol
+        if(ilimitada == True):
+            break
         tableau, vero = eliminacaoGaussiana(tableau, pivot_position, vero)
         
-        print(np.matrix(tableau))
+        #print(np.matrix(tableau))
         print(np.matrix(vero))
 
     print(vero)
-    return get_solution(tableau)
+    if(ilimitada == True):
+        print("Ilimitada")
+        print("Certificado: ", vero[0])
+    else:   
+        sol =  get_solution(tableau)
+        print("Valor: ", tableau[0][-1])
+        print("Solucao: ", sol[0:y])
+        print("Certificado: ", vero[0])
 
 # %%
-c = [2,4,8]
-A = [[1,0,0], [0,1,0], [0,0,1]]
-b = [1,1,1]
-s = simplex(c, A, b)
-print(s)
+inicio = datetime.now()
+
+c, A, b = lerProblema()
+simplex(c, A, b)
+
+fim = datetime.now()
+
+print("\n\nTempo total gasto: ", fim - inicio)
