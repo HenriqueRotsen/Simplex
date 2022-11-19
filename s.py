@@ -66,6 +66,8 @@ def isOtima(tableau):
 # Usando Regra de Bland
 def pivotPosition(tableau):
     ilimitada = False
+    inviavel = False
+
     z = tableau[0]
     for i in range(len(z)-1):
         if z[i] < 0:
@@ -77,13 +79,18 @@ def pivotPosition(tableau):
     restricoes = []
     for eq in tableau[1:]:
         el = eq[column]
+        #Possibilidade de inviabilidade
+        if(eq[-1] < 0):
+            if(all(h >= 0 for h in eq[:-1])):
+                inviavel = True
         restricoes.append(math.inf if el <= 0 else eq[-1] / el)
-
-    if all(x == math.inf for x in restricoes):
-        ilimitada = True
-
-    row = restricoes.index(min(restricoes))
-    return row+1, column, ilimitada
+    
+    if(not(inviavel)):
+        if all(x == math.inf for x in restricoes):
+            ilimitada = True
+    
+    row = restricoes.index(min(restricoes))  
+    return row+1, column, ilimitada, inviavel
     
 
 # %%
@@ -136,22 +143,27 @@ def simplex(c, A, b):
     tableau, vero = criaTableau(c, A, b, x, y)
     #print(isOtima(tableau))
     
-    #print(tableau)
-    print(vero)
+    print(tableau)
+    #print(vero)
 
     while not(isOtima(tableau)):
-        pivotRow, pivotCol, ilimitada  = pivotPosition(tableau)
-        pivot_position = pivotRow, pivotCol
-        if(ilimitada == True):
+        pivotRow, pivotCol, ilimitada, inviavel  = pivotPosition(tableau)
+        if(ilimitada == True or inviavel == True):
             break
+        pivot_position = pivotRow, pivotCol
         tableau, vero = eliminacaoGaussiana(tableau, pivot_position, vero)
         
         #print(np.matrix(tableau))
-        print(np.matrix(vero))
+        #print(np.matrix(vero))
 
-    print(vero)
+    #print(vero)
+    if(inviavel == True):
+        print("Inviavel")
+        print("Certificado: ", vero[0])
     if(ilimitada == True):
+        sol =  get_solution(tableau)
         print("Ilimitada")
+        print("Solucao: ", sol[0:y])
         print("Certificado: ", vero[0])
     else:   
         sol =  get_solution(tableau)
