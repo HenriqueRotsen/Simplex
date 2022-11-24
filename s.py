@@ -1,7 +1,9 @@
 # %%
 import numpy as np
 import math
+import sys
 from datetime import datetime
+inicio = datetime.now()
 
 # %%
 def lerProblema():
@@ -113,7 +115,7 @@ def eliminacaoGaussiana(tableau, pivot_position, vero):
             novoTableau[eq_i] = np.array(tableau[eq_i]) - multiplier
 
             aux = np.array(novoTableau[i][j]) * tableau[eq_i][j]
-            multiplierVero = (aux *np.array(vero[i])) 
+            multiplierVero = (aux * np.array(novoVero[i])) 
             novoVero[eq_i] = np.array(vero[eq_i]) - multiplierVero
     
     return novoTableau, novoVero
@@ -139,11 +141,13 @@ def get_solution(tableau):
 def simplex(c, A, b):
     x = len(A)
     y = len(A[0])
-    
+    inviavel = False
+    ilimitada = False
+
     tableau, vero = criaTableau(c, A, b, x, y)
     #print(isOtima(tableau))
     
-    print(tableau)
+    #print(tableau)
     #print(vero)
 
     while not(isOtima(tableau)):
@@ -159,24 +163,27 @@ def simplex(c, A, b):
     #print(vero)
     if(inviavel == True):
         print("Inviavel")
-        print("Certificado: ", vero[0])
-    if(ilimitada == True):
+        for i in vero[0]:
+            print("%.7f" % i, end=" ")
+    elif(ilimitada == True):
         sol =  get_solution(tableau)
         print("Ilimitada")
-        print("Solucao: ", sol[0:y])
-        print("Certificado: ", vero[0])
+        for i in sol[0:y]:
+            print("%.7f" % i, end=" ")
     else:   
         sol =  get_solution(tableau)
-        print("Valor: ", tableau[0][-1])
-        print("Solucao: ", sol[0:y])
-        print("Certificado: ", vero[0])
+        print("Otima")
+        print("%.7f" % tableau[0][-1])
+        for i in sol[0:y]:
+            print("%.7f" % i, end=" ")
+        print("")
+        for i in vero[0]:
+            print("%.7f" % i, end=" ")
 
 # %%
-inicio = datetime.now()
 
 c, A, b = lerProblema()
 simplex(c, A, b)
 
 fim = datetime.now()
-
-print("\n\nTempo total gasto: ", fim - inicio)
+print("\nTempo total gasto: ", fim - inicio)
