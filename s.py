@@ -78,22 +78,22 @@ def pivotPositionDual(tableau):
     for x in range(1, len(tableau)):
         z.append(tableau[x][-1])
 
-    for i in range(len(z)-1):
+    for i in range(len(z)):
         if z[i] < 0:
             line = i
             break
     line += 1
     restricoes = []
-    eq = tableau[line:-1][0]
-    for x in range(len(eq)-1):
+    eq = tableau[line][:-1]
+    for x in range(len(eq)):
         el = eq[x]
         if (el < 0):
-            restricoes.append(tableau[0][x] / el)
+            restricoes.append(tableau[0][x] / -(el))
         else:
             restricoes.append(math.inf)
 
-    row = restricoes.index(min(restricoes))
-    return row+1, line
+    col = restricoes.index(min(restricoes))
+    return line, col
 
 # %%
 # Usando Regra de Bland
@@ -197,7 +197,7 @@ def simplex(c, A, b):
     # print(tableau)
     # print(vero)
 
-    while not (isOtima(tableau)):
+    while not(isOtima(tableau)):
         pivotRow, pivotCol, ilimitada, inviavel = pivotPosition(tableau)
         if (ilimitada == True or inviavel == True):
             break
@@ -207,9 +207,9 @@ def simplex(c, A, b):
         # print(np.matrix(tableau))
         # print(np.matrix(vero))
 
-    dual = isDual(tableau)
-    if (dual):
+    while isDual(tableau) and not(inviavel):
         pivot_position = pivotPositionDual(tableau)
+        tableau, vero = eliminacaoGaussiana(tableau, pivot_position, vero)
 
     if (inviavel == True):
         print("Inviavel")
