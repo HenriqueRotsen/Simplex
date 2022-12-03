@@ -1,7 +1,6 @@
 # %%
 import numpy as np
 import math
-import sys
 from datetime import datetime
 inicio = datetime.now()
 
@@ -54,9 +53,6 @@ def criaTableau(c, A, b, x, y):
     bt = np.reshape(b, (x+1, 1))
     tableaufpi = np.concatenate((tableau, v), axis=1)
     tableaufpi = np.concatenate((tableaufpi, bt), axis=1)
-
-    # for i in range(x):
-    #    tableaufpi[i+1][y+x] = b[i]
 
     return tableaufpi, v
 
@@ -192,22 +188,14 @@ def simplex(c, A, b):
 
     tableau, vero = criaTableau(c, A, b, x, y)
 
-    # print(isOtima(tableau))
-
-    # print(tableau)
-    # print(vero)
-
-    while not(isOtima(tableau)):
+    while not (isOtima(tableau)):
         pivotRow, pivotCol, ilimitada, inviavel = pivotPosition(tableau)
         if (ilimitada == True or inviavel == True):
             break
         pivot_position = pivotRow, pivotCol
         tableau, vero = eliminacaoGaussiana(tableau, pivot_position, vero)
 
-        # print(np.matrix(tableau))
-        # print(np.matrix(vero))
-
-    while isDual(tableau) and not(inviavel):
+    while isDual(tableau) and not (inviavel):
         pivot_position = pivotPositionDual(tableau)
         tableau, vero = eliminacaoGaussiana(tableau, pivot_position, vero)
 
